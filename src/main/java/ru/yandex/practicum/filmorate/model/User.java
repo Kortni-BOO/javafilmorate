@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class User {
-    private int id;//целочисленный идентификатор;
+    private long id;//целочисленный идентификатор;
     private String email;//электронная почта;
     private String login;//логин пользователя;
     private String name;//имя для отображения;
@@ -19,11 +19,7 @@ public class User {
     public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
         this.login = login;
-        if(name == null) {
-            this.name = login;
-        } else {
-            this.name = name;
-        }
+        this.name = name;
         this.birthday = birthday;
     }
 

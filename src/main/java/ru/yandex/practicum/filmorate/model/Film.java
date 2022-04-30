@@ -10,11 +10,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Film {
-    private int id;//целочисленный идентификатор
+    private long id;//целочисленный идентификатор
     private String name;//название
     private String description;//описание
     private LocalDate releaseDate;//дата релиза
-    private int duration;//продолжительность фильма
+    private long duration;//продолжительность фильма
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
