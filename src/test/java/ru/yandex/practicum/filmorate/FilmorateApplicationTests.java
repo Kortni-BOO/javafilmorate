@@ -48,6 +48,7 @@ class FilmorateApplicationTests {
 	void contextLoads() {
 	}
 
+	//Тесты валидации полей для создания фильма
 	@Test
 	public void shouldThrowExceptionWhenFilmNameNull() {
 		ValidationException ex = Assertions.assertThrows(
@@ -93,6 +94,7 @@ class FilmorateApplicationTests {
 	}
 
 
+	//Тесты валидации полей при создании пользователя
 	@Test
 	public void shouldThrowExceptionWhenUserEmailNull() {
 		ValidationException ex = Assertions.assertThrows(
