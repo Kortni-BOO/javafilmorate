@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.lang.reflect.Executable;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
