@@ -14,7 +14,7 @@ import java.util.*;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private HashMap<Long, User> users = new HashMap<>();
-    private static long id = 0;
+    private long id = 0;
 
     private long generateId() {
         return ++id;
@@ -28,9 +28,6 @@ public class UserController {
                     "Пользователь с электронной почтой %s уже зарегистрирован.",
                     user.getEmail()
             ));
-        }
-        if(user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
         }
         user.setId(generateId());
         log.debug("Получен запрос POST /users.");
@@ -57,6 +54,9 @@ public class UserController {
         if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@"))) {
             throw new ValidationException("Адрес электронной почты не может быть " +
                     "пустым и должен содержать символ @.");
+        }
+        if(user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
         if (user.getLogin() == null || user.getLogin().isBlank()) {
             throw new ValidationException("Логин не может быть пустым и содержать пробелы.");

@@ -41,6 +41,7 @@ class FilmorateApplicationTests {
 	User userLoginNull = new User("kis@mail.ru", " ", "Kis", birthday);
 	User userBirthdayInTheFuture = new User("kis@mail.ru",
 			"Kis", "Kis", birthdayFuture);
+	User userNameNull = new User("kis@mail.ru", "Kis", "", birthday);
 	UserController userController = new UserController();
 
 	@Test
@@ -104,6 +105,12 @@ class FilmorateApplicationTests {
 		);
 		assertEquals("Адрес электронной почты не может быть " +
 				"пустым и должен содержать символ @.", ex.getMessage());
+	}
+
+	@Test
+	public void shouldSetNameUserLogin() {
+		userController.create(userNameNull);
+		assertEquals(userNameNull.getLogin(), userNameNull.getName());
 	}
 
 	@Test

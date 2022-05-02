@@ -16,7 +16,7 @@ import java.util.List;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private HashMap<Long, Film> films = new HashMap<>();
-    private static long id = 0;
+    private long id = 0;
 
     private long generateId() {
         return ++id;
