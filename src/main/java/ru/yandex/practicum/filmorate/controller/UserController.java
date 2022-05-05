@@ -39,7 +39,9 @@ public class UserController {
     public User update(@RequestBody User user) {
         checkData(user);
         log.debug("Получен запрос PUT /users.");
-        users.put(user.getId(), user);
+        if(users.get(user.getId()) != null) {
+            users.put(user.getId(), user);
+        }
         return users.get(user.getId());
     }
     //получение списка всех пользователей

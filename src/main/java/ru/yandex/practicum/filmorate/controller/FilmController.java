@@ -35,7 +35,9 @@ public class FilmController {
     public Film update(@RequestBody Film film) {
         log.debug("Получен запрос PUT /films.");
         checkData(film);
-        films.put(film.getId(), film);
+        if(films.get(film.getId()) != null) {
+            films.put(film.getId(), film);
+        }
         return films.get(film.getId());
     }
     //получение всех фильмов
