@@ -16,39 +16,41 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     FilmStorage filmStorage = new InMemoryFilmStorage();
+    UserService userService = new UserService();
 
     //добавление фильма
     public Film create(@RequestBody Film film) {
-        film.setId(generateId());
-        films.put(film.getId(), film);
-        return film;
+        return filmStorage.create(film);
     }
 
     //обновление фильма
     public Film update(@RequestBody Film film) {
-        if(films.get(film.getId()) != null) {
-            films.put(film.getId(), film);
-        }
-        return films.get(film.getId());
+        return filmStorage.update(film);
     }
 
     //получение всех фильмов
     public List<Film> findAll() {
-        List<Film> filmsList = new ArrayList<>(films.values());
+        List<Film> filmsList = new ArrayList<>(filmStorage.findAll());
         return filmsList;
     }
     //добавление лайка
-    public void like(User user, Film film) {
+    public Film like(long id, long filmId) {
+        User user = userService.getById(filmId);
+        Film film = filmStorage.getById(id);
         film.addLike(user.getId());
+        return film;
     }
     //удаление лайка
-    public void deleteLike(User user, Film film) {
+    public Film deleteLike(long id, long filmId) {
+        User user = userService.getById(filmId);
+        Film film = filmStorage.getById(id);
         film.getRate().remove(user.getId());
+        return film;
     }
     //вывод 10 наиболее популярных фильмов по количеству лайков
     public List<Film> getHitMovie(int count) {
         RateSizeComparator comparator = new RateSizeComparator();
-        List<Film> hitFilms = filmStorage.getFilms().values().stream()
+        List<Film> hitFilms = filmStorage.findAll().stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
         if (count > hitFilms.size() && hitFilms.size() < 10) {

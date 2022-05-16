@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
@@ -13,6 +14,9 @@ public interface FilmStorage {
 
     //получение всех фильмов
     public List<Film> findAll();
+
+    //Поиск по id
+    public Film getById(long id);
 
     public void checkData(Film film);
 }

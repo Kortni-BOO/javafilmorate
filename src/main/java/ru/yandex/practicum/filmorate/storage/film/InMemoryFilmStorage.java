@@ -33,10 +33,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //добавление фильма
     @Override
-    @PostMapping
     public Film create(@RequestBody Film film) {
         checkData(film);
-        log.debug("Получен запрос POST /films.");
         film.setId(generateId());
         films.put(film.getId(), film);
         return film;
@@ -44,9 +42,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //обновление фильма
     @Override
-    @PutMapping
     public Film update(@RequestBody Film film) {
-        log.debug("Получен запрос PUT /films.");
         checkData(film);
         if(films.get(film.getId()) != null) {
             films.put(film.getId(), film);
@@ -56,11 +52,22 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //получение всех фильмов
     @Override
-    @GetMapping
     public List<Film> findAll() {
         log.debug("Получен запрос GET /films.");
         List<Film> filmsList = new ArrayList<>(films.values());
         return filmsList;
+    }
+
+    //получить фильм по id
+    @Override
+    public Film getById(long id) {
+        /*
+        if(films.get(id) == null) {
+            new UserNotFoundException(String.format("Пользователь № %d не найден", id));
+        }
+
+         */
+        return films.get(id);
     }
 
     @Override

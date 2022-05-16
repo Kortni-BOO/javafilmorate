@@ -18,22 +18,26 @@ import java.util.List;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     FilmService service;
+
     @Autowired
     public FilmController(FilmService service) {
         this.service = service;
     }
+
     //добавление фильма
     @PostMapping
     public Film create(@RequestBody Film film) {
         log.debug("Получен запрос POST /films.");
         return service.create(film);
     }
+
     //обновление фильма
     @PutMapping
     public Film update(@RequestBody Film film) {
         log.debug("Получен запрос PUT /films.");
         return service.update(film);
     }
+
     //получение всех фильмов
     @GetMapping
     public List<Film> findAll() {
@@ -44,18 +48,21 @@ public class FilmController {
 
     //пользователь ставит лайк фильму PUT /films/{id}/like/{userId}
     @PutMapping("/{id}/like/{}userId")
-    public void setLike(@PathVariable String id, @PathVariable String userId) {
-
+    public Film setLike(@PathVariable String id, @PathVariable String userId) {
+        return service.like(Long.parseLong(id), Long.parseLong(userId));
     }
     //пользователь удаляет лайк DELETE /films/{id}/like/{userId}
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable String id, @PathVariable String userId) {
-
+    public Film deleteLike(@PathVariable String id, @PathVariable String userId) {
+        return service.deleteLike(Long.parseLong(id), Long.parseLong(userId));
     }
     /*
     GET /films/popular?count={count}
     возвращает список из первых count фильмов по количеству лайков.
     Если значение параметра count не задано, верните первые 10
     */
-    //@GetMapping("")
+    @GetMapping("/popular?count={count}")
+    public List<Film> getPopular(@PathVariable String count) {
+        return service.getHitMovie(Integer.parseInt(count));
+    }
 }
