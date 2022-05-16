@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -23,12 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User create(User user) {
         checkData(user);
-        if (users.containsKey(user.getEmail())) {
-            throw new ValidationException(String.format(
-                    "Пользователь с электронной почтой %s уже зарегистрирован.",
-                    user.getEmail()
-            ));
-        }
+        checkEmail(user);
         user.setId(generateId());
         users.put(user.getId(), user);
         return user;
@@ -54,8 +49,11 @@ public class InMemoryUserStorage implements UserStorage {
     //получить пользователя по id
     @Override
     public User getById(long id) {
-        if(users.get(id) == null) {
-            new UserNotFoundException(String.format("Пользователь № %d не найден", id));
+        if(!users.containsKey(id)) {
+            throw new UserNotFoundException(String.format("Пользователь № %d не найден", id));
+        }
+        if(id < 0) {
+            throw new UserNotFoundException("Пользователь № %d не найден");
         }
         return users.get(id);
     }
@@ -75,5 +73,17 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
+    }
+
+    public void checkEmail(User user) {
+        ArrayList<String> emails = new ArrayList<>();
+        for(User users: users.values()) {
+            users.getEmail();
+            emails.add(users.getEmail());
+        }
+        if(emails.contains(user.getEmail())) {
+            throw new ValidationException("Пользователь с электронной почтой уже зарегистрирован.");
+        }
+
     }
 }

@@ -28,6 +28,10 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
+    public Film getById(long id) {
+        return filmStorage.getById(id);
+    }
+
     //получение всех фильмов
     public List<Film> findAll() {
         List<Film> filmsList = new ArrayList<>(filmStorage.findAll());

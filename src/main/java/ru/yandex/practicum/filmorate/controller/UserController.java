@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -36,22 +37,24 @@ public class UserController {
 
     //получение списка всех пользователей
     @GetMapping
-    public List<User> getAll() {
+    public List<User> findAll() {
         log.debug("Получен запрос GET /users.");
-        return userService.getAll();
+        return userService.findAll();
     }
 
     //получение пользователя по id
     @GetMapping("/{id}")
-    public User getById(@PathVariable long id) {
+    public User getById(@PathVariable String id) {
         log.debug("Получен запрос GET /users.");
-        return userService.getById(id);
+        System.out.println(id);
+        return userService.getById(Long.parseLong(id));
     }
 
     //добавление в друзья PUT /users/{id}/friends/{friendId}
     @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable String id, @PathVariable String friendId) {
-        return userService.addFriend(Long.parseLong(id), Long.parseLong(friendId));
+    public User addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        System.out.println(id + " " + friendId);
+        return userService.addFriend(id, friendId);
     }
 
     //удаление из друзей DELETE /users/{id}/friends/{friendId}

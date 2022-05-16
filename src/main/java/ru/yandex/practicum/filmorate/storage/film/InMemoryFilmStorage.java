@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.error.ValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -61,12 +62,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     //получить фильм по id
     @Override
     public Film getById(long id) {
-        /*
-        if(films.get(id) == null) {
-            new UserNotFoundException(String.format("Пользователь № %d не найден", id));
+        if(!films.containsKey(id)) {
+            throw new UserNotFoundException(String.format("Фильм № %d не найден", id));
         }
-
-         */
+        if(id < 0) {
+            throw new UserNotFoundException("Фильм № %d не найден");
+        }
         return films.get(id);
     }
 
@@ -77,6 +78,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         if(film.getDescription().length() > 200) {
             throw new ValidationException("Максимальная длина описания - 200 символов.");
+        }
+        if(film.getDescription().isBlank()) {
+            throw new ValidationException("Должно быть описание");
         }
         if(film.getReleaseDate().isBefore(LocalDate.of(1895,12,28))) {
             throw new ValidationException("Дата релиза - не раньше 28 декабря 1895.");

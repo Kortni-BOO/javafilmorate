@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.error.ValidationException;
+
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
@@ -46,6 +47,14 @@ public class FilmController {
         return filmsList;
     }
 
+    //получение пользователя по id
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable Long id) {
+        log.debug("Получен запрос GET /users.");
+        System.out.println(id);
+        return service.getById(id);
+    }
+
     //пользователь ставит лайк фильму PUT /films/{id}/like/{userId}
     @PutMapping("/{id}/like/{}userId")
     public Film setLike(@PathVariable String id, @PathVariable String userId) {
@@ -61,8 +70,8 @@ public class FilmController {
     возвращает список из первых count фильмов по количеству лайков.
     Если значение параметра count не задано, верните первые 10
     */
-    @GetMapping("/popular?count={count}")
-    public List<Film> getPopular(@PathVariable String count) {
-        return service.getHitMovie(Integer.parseInt(count));
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(defaultValue = "10", required = false) Integer count) {
+        return service.getHitMovie(count);
     }
 }
