@@ -47,9 +47,6 @@ public class UserService {
     public User addFriend(long id, long friendId) {
         User user = userStorage.getById(id);
         User userFriend = userStorage.getById(friendId);
-//        if(user.getFriends().contains(userFriend.getId())) {
-//            throw new UserNotFoundException(String.format("Пользователь № %d не найден", id));
-//        }
         user.getFriends().add(userFriend.getId());
         userFriend.getFriends().add(user.getId());
         return userFriend;
