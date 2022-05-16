@@ -10,11 +10,13 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Getter
@@ -30,7 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //добавление фильма
     @Override
-    public Film create(@RequestBody Film film) {
+    public Film create(Film film) {
         checkData(film);
         film.setId(generateId());
         films.put(film.getId(), film);
@@ -39,7 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //обновление фильма
     @Override
-    public Film update(@RequestBody Film film) {
+    public Film update(Film film) {
         checkData(film);
         if(films.get(film.getId()) != null) {
             films.put(film.getId(), film);
@@ -57,11 +59,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     //получить фильм по id
     @Override
-    public Film getById(long id) {
+    public Optional<Film> getById(long id) {
+        //Optional<Film> optFilm = Optional.ofNullable(films.get(id));
+
         if(id < 0) {
             throw new UserNotFoundException("Фильм № %d не найден");
         }
-        return films.get(id);
+        return Optional.ofNullable(films.get(id));
     }
 
     @Override

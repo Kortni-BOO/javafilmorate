@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -24,17 +25,19 @@ public class FilmService {
     }
 
     //добавление фильма
-    public Film create(@RequestBody Film film) {
+    public Film create(Film film) {
         return filmStorage.create(film);
     }
 
     //обновление фильма
-    public Film update(@RequestBody Film film) {
+    public Film update(Film film) {
         return filmStorage.update(film);
     }
 
     public Film getById(long id) {
-        return filmStorage.getById(id);
+        Film film = filmStorage.getById(id)
+                .orElseThrow(() -> new UserNotFoundException("Фильм не найден."));
+        return film;
     }
 
     //получение всех фильмов
@@ -42,23 +45,24 @@ public class FilmService {
         return filmStorage.findAll();
     }
     //добавление лайка
-    public Film like(long id, long filmId) {
-        User user = userService.getById(filmId);
-        Film film = filmStorage.getById(id);
-        film.addLike(user.getId());
+    public Film like(long id, long userId) {
+        User user = userService.getById(userId);
+        Film film = filmStorage.getById(id).get();
+        //film.addLike(user.getId());
+        film.getRate().add(userId);
         return film;
     }
     //удаление лайка
-    public Film deleteLike(long id, long filmId) {
-        User user = userService.getById(filmId);
-        Film film = filmStorage.getById(id);
+    public Film deleteLike(long id, long userId) {
+        User user = userService.getById(userId);
+        Film film = filmStorage.getById(id).get();
         film.getRate().remove(user.getId());
         return film;
     }
     //вывод 10 наиболее популярных фильмов по количеству лайков
     public List<Film> getHitMovie(int count) {
         List<Film> hitFilms = filmStorage.findAll().stream()
-                .sorted(comparator)
+                .sorted(comparator.reversed())
                 .limit(count)
                 .collect(Collectors.toList());
         return hitFilms;

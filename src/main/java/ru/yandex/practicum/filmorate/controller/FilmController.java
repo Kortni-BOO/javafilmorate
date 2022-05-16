@@ -52,7 +52,7 @@ public class FilmController {
     }
 
     //пользователь ставит лайк фильму PUT /films/{id}/like/{userId}
-    @PutMapping("/{id}/like/{}userId")
+    @PutMapping("/{id}/like/{userId}")
     public Film setLike(@PathVariable Long id, @PathVariable Long userId) {
         return service.like(id, userId);
     }

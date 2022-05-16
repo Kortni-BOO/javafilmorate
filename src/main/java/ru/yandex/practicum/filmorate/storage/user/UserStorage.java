@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserStorage {
     //создание пользователя
@@ -16,7 +17,7 @@ public interface UserStorage {
     public List<User> findAll();
 
     //Поиск по id
-    public User getById(long id);
+    public Optional<User> getById(long id);
 
     public void checkData(User user);
 }

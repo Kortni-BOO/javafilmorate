@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -48,14 +49,14 @@ public class InMemoryUserStorage implements UserStorage {
 
     //получить пользователя по id
     @Override
-    public User getById(long id) {
-        if(!users.containsKey(id)) {
-            throw new UserNotFoundException(String.format("Пользователь № %d не найден", id));
-        }
+    public Optional<User> getById(long id) {
+        //Optional<User> optUser = Optional.ofNullable(users.get(id));
+
         if(id < 0) {
             throw new UserNotFoundException("Пользователь № %d не найден");
         }
-        return users.get(id);
+
+       return Optional.ofNullable(users.get(id));
     }
 
     @Override
