@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    FilmService service;
+    private final FilmService service;
 
     @Autowired
     public FilmController(FilmService service) {
@@ -40,8 +40,7 @@ public class FilmController {
     @GetMapping
     public List<Film> findAll() {
         log.debug("Получен запрос GET /films.");
-        List<Film> filmsList = new ArrayList<>(service.findAll());
-        return filmsList;
+        return service.findAll();
     }
 
     //получение пользователя по id
@@ -54,13 +53,13 @@ public class FilmController {
 
     //пользователь ставит лайк фильму PUT /films/{id}/like/{userId}
     @PutMapping("/{id}/like/{}userId")
-    public Film setLike(@PathVariable String id, @PathVariable String userId) {
-        return service.like(Long.parseLong(id), Long.parseLong(userId));
+    public Film setLike(@PathVariable Long id, @PathVariable Long userId) {
+        return service.like(id, userId);
     }
     //пользователь удаляет лайк DELETE /films/{id}/like/{userId}
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable String id, @PathVariable String userId) {
-        return service.deleteLike(Long.parseLong(id), Long.parseLong(userId));
+    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        return service.deleteLike(id, userId);
     }
     /*
     GET /films/popular?count={count}

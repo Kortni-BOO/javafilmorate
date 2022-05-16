@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,6 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class FilmorateApplicationTests {
+	UserStorage storage = new InMemoryUserStorage();
+	FilmStorage filmStorage = new InMemoryFilmStorage();
+	UserService serviceUser = new UserService();
+	UserController userController = new UserController(serviceUser);
 	LocalDate dateOriginal = LocalDate.of(2014, 9, 25);
 	LocalDate dateRos = LocalDate.of(1893, 6, 12);
 	Film filmNotName = new Film(" ",
@@ -37,7 +43,7 @@ class FilmorateApplicationTests {
 	Film filmDurationNegative = new Film("Я - начало",
 			"Ученый пытается опровергнуть Бога.",
 			dateOriginal,-108);
-	FilmService service = new FilmService();
+	FilmService service = new FilmService(filmStorage,serviceUser);
 	FilmController filmController = new FilmController(service);
 
 	LocalDate birthday = LocalDate.of(1990, 12,1);
@@ -47,9 +53,7 @@ class FilmorateApplicationTests {
 	User userBirthdayInTheFuture = new User("kis@mail.ru",
 			"Kis", "Kis", birthdayFuture);
 	User userNameNull = new User("kis@mail.ru", "Kis", "", birthday);
-	UserStorage storage = new InMemoryUserStorage();
-	UserService serviceUser = new UserService();
-	UserController userController = new UserController(serviceUser);
+
 
 	@Test
 	void contextLoads() {

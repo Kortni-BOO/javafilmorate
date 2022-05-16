@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,8 +13,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    FilmStorage filmStorage = new InMemoryFilmStorage();
-    UserService userService = new UserService();
+    private final FilmStorage filmStorage;
+    private final UserService userService;
+    private RateSizeComparator comparator = new RateSizeComparator();
+
+    @Autowired
+    public FilmService(FilmStorage filmStorage, UserService userService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+    }
 
     //добавление фильма
     public Film create(@RequestBody Film film) {
@@ -31,8 +39,7 @@ public class FilmService {
 
     //получение всех фильмов
     public List<Film> findAll() {
-        List<Film> filmsList = new ArrayList<>(filmStorage.findAll());
-        return filmsList;
+        return filmStorage.findAll();
     }
     //добавление лайка
     public Film like(long id, long filmId) {
@@ -50,20 +57,10 @@ public class FilmService {
     }
     //вывод 10 наиболее популярных фильмов по количеству лайков
     public List<Film> getHitMovie(int count) {
-        RateSizeComparator comparator = new RateSizeComparator();
         List<Film> hitFilms = filmStorage.findAll().stream()
                 .sorted(comparator)
+                .limit(count)
                 .collect(Collectors.toList());
-        if (count > hitFilms.size() && hitFilms.size() < 10) {
-            return hitFilms;
-        } else if (count > hitFilms.size()) {
-            return hitFilms.stream()
-                    .limit(10)
-                    .collect(Collectors.toList());
-        } else {
-            return hitFilms.stream()
-                    .limit(count)
-                    .collect(Collectors.toList());
-        }
+        return hitFilms;
     }
 }
