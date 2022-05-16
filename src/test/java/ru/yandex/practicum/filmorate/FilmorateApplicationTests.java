@@ -8,6 +8,10 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
@@ -33,7 +37,8 @@ class FilmorateApplicationTests {
 	Film filmDurationNegative = new Film("Я - начало",
 			"Ученый пытается опровергнуть Бога.",
 			dateOriginal,-108);
-	FilmController filmController = new FilmController();
+	FilmService service = new FilmService();
+	FilmController filmController = new FilmController(service);
 
 	LocalDate birthday = LocalDate.of(1990, 12,1);
 	LocalDate birthdayFuture = LocalDate.of(3091, 12,1);
@@ -42,7 +47,9 @@ class FilmorateApplicationTests {
 	User userBirthdayInTheFuture = new User("kis@mail.ru",
 			"Kis", "Kis", birthdayFuture);
 	User userNameNull = new User("kis@mail.ru", "Kis", "", birthday);
-	UserController userController = new UserController();
+	UserStorage storage = new InMemoryUserStorage();
+	UserService serviceUser = new UserService();
+	UserController userController = new UserController(serviceUser);
 
 	@Test
 	void contextLoads() {

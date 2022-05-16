@@ -16,7 +16,7 @@ public class Film {
     private String description;//описание
     private LocalDate releaseDate;//дата релиза
     private long duration;//продолжительность фильма
-    private Set<Long> likedCount;
+    private Set<Long> rate;
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
@@ -26,7 +26,7 @@ public class Film {
     }
 
     public void addLike(long id) {
-        likedCount.add(id);
+        rate.add(id);
     }
 
 }

@@ -15,5 +15,8 @@ public interface UserStorage {
     //получение списка всех пользователей
     public List<User> findAll();
 
+    //Поиск по id
+    public User getById(long id);
+
     public void checkData(User user);
 }

@@ -1,16 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.error.ValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +12,6 @@ import java.util.List;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private HashMap<Long, User> users = new HashMap<>();
     private long id = 0;
 
@@ -29,8 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     //создание пользователя
     @Override
-    @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(User user) {
         checkData(user);
         if (users.containsKey(user.getEmail())) {
             throw new ValidationException(String.format(
@@ -39,17 +30,14 @@ public class InMemoryUserStorage implements UserStorage {
             ));
         }
         user.setId(generateId());
-        log.debug("Получен запрос POST /users.");
         users.put(user.getId(), user);
         return user;
     }
 
     //обновление пользователя;
     @Override
-    @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(User user) {
         checkData(user);
-        log.debug("Получен запрос PUT /users.");
         if(users.get(user.getId()) != null) {
             users.put(user.getId(), user);
         }
@@ -58,11 +46,18 @@ public class InMemoryUserStorage implements UserStorage {
 
     //получение списка всех пользователей
     @Override
-    @GetMapping
     public List<User> findAll() {
-        log.debug("Получен запрос GET /users.");
         List<User> usersList = new ArrayList<>(users.values());
         return usersList;
+    }
+
+    //получить пользователя по id
+    @Override
+    public User getById(long id) {
+        if(users.get(id) == null) {
+            new UserNotFoundException(String.format("Пользователь № %d не найден", id));
+        }
+        return users.get(id);
     }
 
     @Override
