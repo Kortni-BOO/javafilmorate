@@ -6,7 +6,7 @@ Template repository for Filmorate project.
 - подтверждённая — когда второй пользователь согласился на добавление.<br>
 Похожа логика в таблице Film, поле rate ссылается на таблицу, в которой будут количество лайков.
 
-![This is an image](./resurse/My%20First%20Board%20(1).jpg)
+![This is an image](resource/DB.png)
 Примеры запросов для основных операций вашего приложения<br>
 Выведем первых 10 пользователей, а именно их id и email
 ```SQL
