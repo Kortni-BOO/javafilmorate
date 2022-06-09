@@ -19,5 +19,11 @@ public interface UserStorage {
     //Поиск по id
     public Optional<User> getById(long id);
 
-    public void checkData(User user);
+    public void addFriend(long id, long friendId);
+
+    public void deleteFriend(long id, long friendId);
+
+    public List<User> getAllFriends(long id);
+
+    public List<User> getCommonFriends(long id, long friendId);
 }

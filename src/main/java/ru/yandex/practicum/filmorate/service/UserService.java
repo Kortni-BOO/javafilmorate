@@ -1,33 +1,39 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class UserService {
+
     private UserStorage userStorage;
 
-    @Autowired
-    public UserService(UserStorage userStorage) {
+    //@Autowired
+    public UserService(@Qualifier("userDbStorage")UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
     //создание пользователя
     public User create(User user) {
+        checkData(user);
+        checkEmail(user);
         return userStorage.create(user);
     }
 
     //обновление пользователя;
     public User update(User user) {
+        checkData(user);
+
         return userStorage.update(user);
     }
 
@@ -44,46 +50,54 @@ public class UserService {
     }
 
     //добавление в друзья
-    public User addFriend(long id, long friendId) {
-        User user = userStorage.getById(id).get();
-        User userFriend = userStorage.getById(friendId).get();
-        user.getFriends().add(userFriend.getId());
-        userFriend.getFriends().add(user.getId());
-        return userFriend;
+    public void addFriend(long id, long friendId) {
+        userStorage.addFriend(id, friendId);
     }
 
     //удаление из друзей
-    public User deleteFriend(long id, long friendId) {
-        User user = userStorage.getById(id).get();
-        User userFriend = userStorage.getById(friendId).get();
-        if(user.getFriends().contains(userFriend.getId())) {
-            throw new UserNotFoundException(String.format("Пользователь № %d не найден", id));
-        }
-        user.getFriends().remove(userFriend.getId());
-        userFriend.getFriends().remove(user.getId());
-        return userFriend;
+    public void deleteFriend(long id, long friendId) {
+        userStorage.deleteFriend(id, friendId);
     }
 
     //вернуть список друзей
     public List<User> getAllFriends(long id) {
-        User user = userStorage.getById(id).get();
-        List<User> userFriends = new ArrayList<>();
-        for(Long idFriend : userStorage.getById(id).get().getFriends()) {
-            userFriends.add(userStorage.getById(idFriend).get());
-        }
-        return userFriends;
+        return userStorage.getAllFriends(id);
     }
 
     //вывод списка общих друзей
-    public Set<Long> getCommonFriends(long id, long friendId) {
-        User user = userStorage.getById(id).get();
-        User userFriend = userStorage.getById(friendId).get();
-        Set<Long> commonFriends = new HashSet<>();
-        if(user.getFriends().contains(userFriend.getFriends())) {
-            commonFriends.add(userFriend.getId());
-        }
-        return commonFriends;
+    public List<User> getCommonFriends(long id, long friendId) {
+        return userStorage.getCommonFriends(id, friendId);
     }
+
+    public void checkData(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@"))) {
+            throw new ValidationException("Адрес электронной почты не может быть " +
+                    "пустым и должен содержать символ @.");
+        }
+        if(user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
+            throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("Дата рождения не может быть в будущем.");
+        }
+    }
+
+    public void checkEmail(User user) {
+        ArrayList<String> emails = new ArrayList<>();
+        List<User> users = userStorage.findAll();
+        for(User userId: users) {
+            userId.getEmail();
+            emails.add(userId.getEmail());
+        }
+        if(emails.contains(user.getEmail())) {
+            throw new ValidationException("Пользователь с электронной почтой уже зарегистрирован.");
+        }
+
+    }
+
 }
 
 /*

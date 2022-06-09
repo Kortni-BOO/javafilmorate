@@ -53,13 +53,13 @@ public class FilmController {
 
     //пользователь ставит лайк фильму PUT /films/{id}/like/{userId}
     @PutMapping("/{id}/like/{userId}")
-    public Film setLike(@PathVariable Long id, @PathVariable Long userId) {
-        return service.like(id, userId);
+    public void setLike(@PathVariable Long id, @PathVariable Long userId) {
+        service.like(id, userId);
     }
     //пользователь удаляет лайк DELETE /films/{id}/like/{userId}
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        return service.deleteLike(id, userId);
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        service.deleteLike(id, userId);
     }
     /*
     GET /films/popular?count={count}

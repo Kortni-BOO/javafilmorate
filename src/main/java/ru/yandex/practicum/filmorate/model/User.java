@@ -4,26 +4,24 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @ToString
+@Builder
 public class User {
     private long id;//целочисленный идентификатор;
     private String email;//электронная почта;
     private String login;//логин пользователя;
     private String name;//имя для отображения;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;//дата рождения
+    @JsonIgnore
     private Set<Long> friends = new HashSet<>();//список друзей
 
-    public User(String email, String login, String name, LocalDate birthday) {
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
-    }
 
 }

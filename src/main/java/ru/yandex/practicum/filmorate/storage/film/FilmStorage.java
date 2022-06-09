@@ -18,5 +18,9 @@ public interface FilmStorage {
     //Поиск по id
     public Optional<Film> getById(long id);
 
-    public void checkData(Film film);
+    public void like(long id, long userId);
+
+    public void deleteLike(long id, long userId);
+
+    public List<Film> getHitMovie(int count);
 }
