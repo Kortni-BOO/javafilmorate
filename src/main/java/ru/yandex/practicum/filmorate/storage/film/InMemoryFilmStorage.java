@@ -69,6 +69,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void like(long id, long userId) {
+
+    }
+
+    @Override
+    public void deleteLike(long id, long userId) {
+
+    }
+
+    @Override
+    public List<Film> getHitMovie(int count) {
+        return null;
+    }
+
     public void checkData(Film film) {
         if(film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("Название фильма не может быть пустым.");

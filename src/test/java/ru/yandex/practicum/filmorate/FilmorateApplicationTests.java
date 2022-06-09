@@ -1,149 +1,101 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.Assertions;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class FilmorateApplicationTests {
-	UserStorage storage = new InMemoryUserStorage();
-	FilmStorage filmStorage = new InMemoryFilmStorage();
-	UserService serviceUser = new UserService();
-	UserController userController = new UserController(serviceUser);
-	LocalDate dateOriginal = LocalDate.of(2014, 9, 25);
-	LocalDate dateRos = LocalDate.of(1893, 6, 12);
-	Film filmNotName = new Film(" ",
-			"Ученый пытается опровергнуть Бога.",
-			dateOriginal,108);
-	Film filmDescription200 = new Film("Я - начало", "В начале, когда на экране появляется" +
-			" название фильма, некоторое время видны только буквы I и O," +
-			" что составляет «IOII». В двоичной системе счисления 1011 равняется " +
-			"числу 11. Это число появляется несколько раз на протяжении всего фильма и" +
-			" играет немаловажную роль в развитии сюжета. " +
-			"Главный герой Ян разделяет имя с профессором Яном Стивенсоном " +
-			"(1918—2007), наиболее известным своими научными " +
-			"исследованиями в области реинкарнации.", dateOriginal, 108);
-	Film film1893 = new Film("Вокруг кабинки", "мультфильм, короткометражка",
-			dateRos, 2);
-	Film filmDurationNegative = new Film("Я - начало",
-			"Ученый пытается опровергнуть Бога.",
-			dateOriginal,-108);
-	FilmService service = new FilmService(filmStorage,serviceUser);
-	FilmController filmController = new FilmController(service);
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+class FilmoRateApplicationTests {
+    private final UserDbStorage userStorage;
+    private final FilmDbStorage filmStorage;
 
-	LocalDate birthday = LocalDate.of(1990, 12,1);
-	LocalDate birthdayFuture = LocalDate.of(3091, 12,1);
-	User userEmailNull = new User(" ", "Kis", "Kis", birthday);
-	User userLoginNull = new User("kis@mail.ru", " ", "Kis", birthday);
-	User userBirthdayInTheFuture = new User("kis@mail.ru",
-			"Kis", "Kis", birthdayFuture);
-	User userNameNull = new User("kis@mail.ru", "Kis", "", birthday);
+    @Test
+    public void testFindUserById() {
+        Optional<User> userOptional = userStorage.getById(1);
 
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 1L)
+                );
+    }
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    public void testFindAllUsers() {
+        List<User> users = userStorage.findAll();
 
-	//Тесты валидации полей для создания фильма
-	@Test
-	public void shouldThrowExceptionWhenFilmNameNull() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					filmController.create(filmNotName);
-				}
-		);
-		assertEquals("Название фильма не может быть пустым.", ex.getMessage());
-	}
+        assertThat(users).hasSize(3);
+    }
 
-	@Test
-	public void shouldThrowExceptionWhenFilmDescriptionMoreThan200Characters() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					filmController.create(filmDescription200);
-				}
-		);
-		assertEquals("Максимальная длина описания - 200 символов.", ex.getMessage());
-	}
+    @Test
+    public void testUpdateUser() {
+        Optional<User> userOptional = userStorage.getById(3);
 
-	@Test
-	public void shouldThrowExceptionWhenFilmReleaseDateIsBefore1895year12month28day() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					filmController.create(film1893);
-				}
-		);
-		assertEquals("Дата релиза - не раньше 28 декабря 1895.", ex.getMessage());
-	}
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("login", "romashka")
+                );
 
-	@Test
-	public void shouldThrowExceptionWhenFilmDurationNegative() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					filmController.create(filmDurationNegative);
-				}
-		);
-		assertEquals("Продолжительность фильма должна быть положительной.", ex.getMessage());
-	}
+        userStorage.update(User.builder()
+                .id(3)
+                .email("rr@email.ru")
+                .name("Rr Romashka")
+                .birthday(LocalDate.of(1994, 02, 06))
+                .login("rom_pom")
+                .build());
 
+        Optional<User> userOptionalUpdated = userStorage.getById(3);
 
-	//Тесты валидации полей при создании пользователя
-	@Test
-	public void shouldThrowExceptionWhenUserEmailNull() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					userController.create(userEmailNull);
-				}
-		);
-		assertEquals("Адрес электронной почты не может быть " +
-				"пустым и должен содержать символ @.", ex.getMessage());
-	}
+        assertThat(userOptionalUpdated)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("login", "rom_pom")
+                );
+    }
 
-	@Test
-	public void shouldSetNameUserLogin() {
-		userController.create(userNameNull);
-		assertEquals(userNameNull.getLogin(), userNameNull.getName());
-	}
+    @Test
+    public void testAddFriend() {
+        List<User> friends = userStorage.getAllFriends(1);
+        assertThat(friends).hasSize(2);
+    }
 
-	@Test
-	public void shouldThrowExceptionWhenUserLoginNull() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					userController.create(userLoginNull);
-				}
-		);
-		assertEquals("Логин не может быть пустым и содержать пробелы.", ex.getMessage());
-	}
+    @Test
+    public void testGetCommonFriends() {
+        List<User> friends = userStorage.getCommonFriends(1, 2);
+        assertThat(friends).hasSize(1);
+    }
 
-	@Test
-	public void shouldThrowExceptionWhenUserBirthdayIsAfterNow() {
-		ValidationException ex = Assertions.assertThrows(
-				ValidationException.class,
-				() -> {
-					userController.create(userBirthdayInTheFuture);
-				}
-		);
-		assertEquals("Дата рождения не может быть в будущем.", ex.getMessage());
-	}
+    @Test
+    public void testFindFilmById() {
+        Optional<Film> filmOptional = filmStorage.getById(1);
+
+        assertThat(filmOptional)
+                .isPresent()
+                .hasValueSatisfying(film ->
+                        assertThat(film).hasFieldOrPropertyWithValue("id", 1L)
+                );
+    }
+
+    @Test
+    public void testFindAllFilms() {
+        List<Film> films = filmStorage.findAll();
+
+        assertThat(films).hasSize(2);
+    }
 
 }

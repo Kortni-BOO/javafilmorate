@@ -60,6 +60,25 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public void addFriend(long id, long friendId) {
+
+    }
+
+    @Override
+    public void deleteFriend(long id, long friendId) {
+
+    }
+
+    @Override
+    public List<User> getAllFriends(long id) {
+        return null;
+    }
+
+    @Override
+    public List<User> getCommonFriends(long id, long friendId) {
+        return null;
+    }
+
     public void checkData(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank() || (!user.getEmail().contains("@"))) {
             throw new ValidationException("Адрес электронной почты не может быть " +
