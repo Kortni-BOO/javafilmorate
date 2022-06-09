@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpaa;
 import ru.yandex.practicum.filmorate.service.RateSizeComparator;
@@ -13,10 +12,8 @@ import ru.yandex.practicum.filmorate.service.RateSizeComparator;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -106,37 +103,3 @@ public class FilmDbStorage implements FilmStorage {
                 .build();
     }
 }
-/*
-*     public long saveAndReturnId(Employee employee) {
-        String sqlQuery = "insert into employees(first_name, last_name, yearly_income) " +
-                "values (?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"id"});
-            stmt.setString(1, employee.getFirstName());
-            stmt.setString(2, employee.getLastName());
-            stmt.setLong(3, employee.getYearlyIncome());
-            return stmt;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
-    }
-        public void update(Employee employee) {
-        String sqlQuery = "update employees set " +
-                "first_name = ?, last_name = ?, yearly_income = ? " +
-                "where id = ?";
-        jdbcTemplate.update(sqlQuery
-                , employee.getFirstName()
-                , employee.getLastName()
-                , employee.getYearlyIncome()
-                , employee.getId());
-    }
-    private Employee mapRowToEmployee(ResultSet resultSet, int rowNum) throws SQLException {
-    return Employee.builder()
-            .id(resultSet.getLong("id"))
-            .firstName(resultSet.getString("first_name"))
-            .lastName(resultSet.getString("last_name"))
-            .yearlyIncome(resultSet.getLong("yearly_income"))
-            .build();
-  }
-    *
-    * */

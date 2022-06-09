@@ -7,10 +7,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@ToString
 @Builder
 public class Film {
     private long id;//целочисленный идентификатор

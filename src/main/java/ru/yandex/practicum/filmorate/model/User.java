@@ -8,14 +8,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-@Getter
-@Setter
+import javax.validation.constraints.Pattern;
+
+@Data
 @AllArgsConstructor
-@ToString
 @Builder
 public class User {
     private long id;//целочисленный идентификатор;
     private String email;//электронная почта;
+    @Pattern(regexp = "^\\S*$")
     private String login;//логин пользователя;
     private String name;//имя для отображения;
     @JsonFormat(pattern = "yyyy-MM-dd")
